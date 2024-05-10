@@ -7,15 +7,10 @@ namespace Api.Controllers
     [Route("usuarios")]
     public class UsuariosController : ControllerBase
     {
-        private readonly ILogger<UsuariosController> _logger;
         private readonly IUsuarioUseCase _usuarioUseCase;
 
-        public UsuariosController(ILogger<UsuariosController> logger,
-            IUsuarioUseCase usuarioUseCase)
-        {
-            _logger = logger;
+        public UsuariosController(IUsuarioUseCase usuarioUseCase) => 
             _usuarioUseCase = usuarioUseCase;
-        }
 
         [HttpGet]
         public IActionResult ObterUsuarios() =>

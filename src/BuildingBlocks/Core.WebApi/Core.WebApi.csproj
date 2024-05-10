@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Base\**" />
-    <EmbeddedResource Remove="Base\**" />
-    <None Remove="Base\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks\Core.Domain\Core.Domain.csproj" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
   </ItemGroup>
 
 </Project>

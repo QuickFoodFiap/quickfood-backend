@@ -1,8 +1,10 @@
 ﻿using Application.UseCases;
-using Domain.Repositories;
 using HealthChecks.UI.Client;
-using Infra.Repositories;
+using Infra.Context;
+using Infra.DependencyInjection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.OpenApi.Models;
 
 namespace Api
@@ -40,12 +42,16 @@ namespace Api
                 opt.AddHealthCheckEndpoint("API QuickFood", "/health");
             }).AddInMemoryStorage();
 
-            services.AddTransient<IUsuarioRepository, UsuarioRepository>();
+            services.AddInfraDependencyServices(Configuration.GetConnectionString("DefaultConnection"));
+
             services.AddTransient<IUsuarioUseCase, UsuarioUseCase>();
+            services.AddTransient<IProdutoUseCase, ProdutoUseCase>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ApplicationDbContext context)
         {
+            DatabaseMigrator.MigrateDatabase(context);
+
             if (_environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -69,6 +75,16 @@ namespace Api
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+    }
+
+    public static class DatabaseMigrator
+    {
+        public static void MigrateDatabase(ApplicationDbContext context)
+        {
+            var migrator = context.GetService<IMigrator>();
+
+            migrator.Migrate();
         }
     }
 }

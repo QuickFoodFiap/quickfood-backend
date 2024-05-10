@@ -14,7 +14,7 @@ namespace Api
                 logger.LogInformation("Starting application");
                 CreateWebHostBuilder(args).Build().Run();
             }
-            catch (Exception ex)
+            catch
             {
                 logger.LogInformation("Application stopped by exception");
                 throw;

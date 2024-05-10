@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Core.WebApi\Core.WebApi.csproj" />
     <ProjectReference Include="..\Infra\Infra.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
