@@ -1,90 +1,50 @@
-﻿using Application.UseCases;
-using HealthChecks.UI.Client;
+﻿using Api.Configuration;
+using Application.DependencyInjection;
+using Core.WebApi.DependencyInjection;
 using Infra.Context;
 using Infra.DependencyInjection;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.OpenApi.Models;
 
 namespace Api
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        public IConfiguration _configuration;
+
         private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration
-                       , IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            Configuration = configuration;
+            _configuration = configuration;
             _environment = environment;
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
+            _configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            var settings = EnvironmentConfig.ConfigureEnvironment(_configuration);
 
-            services.AddEndpointsApiExplorer();
-            
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API QuickFood", Version = "v1" });
-            });
+            services.AddApiDefautConfig();
 
-            services.AddHealthChecks();
-            services.AddHealthChecksUI(opt =>
-            {
-                opt.SetEvaluationTimeInSeconds(15);
-                opt.MaximumHistoryEntriesPerEndpoint(60);
-                opt.SetApiMaxActiveRequests(1);
+            services.AddHealthCheckConfig(settings.ConnectionStrings.DefaultConnection);
 
-                opt.AddHealthCheckEndpoint("API QuickFood", "/health");
-            }).AddInMemoryStorage();
+            services.AddApplicationDependencyServices();
 
-            services.AddInfraDependencyServices(Configuration.GetConnectionString("DefaultConnection"));
+            services.AddInfraDependencyServices(settings.ConnectionStrings.DefaultConnection);
 
-            services.AddTransient<IUsuarioUseCase, UsuarioUseCase>();
-            services.AddTransient<IProdutoUseCase, ProdutoUseCase>();
         }
 
         public void Configure(IApplicationBuilder app, ApplicationDbContext context)
         {
-            DatabaseMigrator.MigrateDatabase(context);
+            DatabaseMigratorBase.MigrateDatabase(context);
 
-            if (_environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHsts();
-            app.UseHttpsRedirection();
-
-            #region Healthcheck
-            app.UseHealthChecks("/health", new HealthCheckOptions
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            })
-                .UseHealthChecksUI(options => { options.UIPath = "/health-ui"; }); ;
-            #endregion
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-    }
-
-    public static class DatabaseMigrator
-    {
-        public static void MigrateDatabase(ApplicationDbContext context)
-        {
-            var migrator = context.GetService<IMigrator>();
-
-            migrator.Migrate();
+            app.UseApiDefautConfig(_environment);
         }
     }
 }

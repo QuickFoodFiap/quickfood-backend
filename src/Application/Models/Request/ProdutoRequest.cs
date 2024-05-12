@@ -1,4 +1,4 @@
-﻿using Domain.ValuesObjects;
+﻿using Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Models.Request
@@ -22,6 +22,10 @@ namespace Application.Models.Request
         [Display(Name = "Preço")]
         public decimal Preco { get; set; }
 
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        public required bool Ativo { get; set; }
+
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public Categoria Categoria { get; set; }
     }
 }

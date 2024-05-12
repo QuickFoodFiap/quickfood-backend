@@ -18,7 +18,6 @@ namespace Infra.DependencyInjection
                                      o => { o.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null); });
             });
 
-            services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IProdutoRepository, ProdutoRepository>();
         }
     }

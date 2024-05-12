@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.ValuesObjects;
+using Domain.ValueObjects;
 using Infra.Mappings.SeedData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -26,7 +26,8 @@ namespace Core.WebApi.Controller
         protected IActionResult SuccessCreated(string url, object data) =>
             Created(url, new BaseApiResponse { Success = true, Data = data });
 
-        protected IActionResult SuccessNoContent() => NoContent();
+        protected IActionResult SuccessNoContent() =>
+            NoContent();
 
         protected IActionResult ErrorBadRequestPutId()
         {
@@ -58,6 +59,12 @@ namespace Core.WebApi.Controller
             var errors = new List<string> { error };
             return NotFound(new BaseApiResponse { Success = false, Errors = errors });
         }
+
+        protected IActionResult ErrorNotFound() =>
+            NotFound();
+
+        protected IActionResult ErrorBadRequest(object data) =>
+            StatusCode((int)HttpStatusCode.BadRequest, new BaseApiResponse { Success = false, Data = data });
 
         protected IActionResult ErrorInternalServerError(object data) =>
             StatusCode((int)HttpStatusCode.InternalServerError, new BaseApiResponse { Success = false, Data = data });

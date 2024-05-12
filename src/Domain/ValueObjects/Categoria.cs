@@ -1,4 +1,4 @@
-﻿namespace Domain.ValuesObjects
+﻿namespace Domain.ValueObjects
 {
     public enum Categoria
     {

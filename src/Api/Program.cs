@@ -6,8 +6,8 @@ namespace Api
     {
         public static void Main(string[] args)
         {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger logger = factory.CreateLogger("Program");
+            using var factory = LoggerFactory.Create(builder => builder.AddConsole());
+            var logger = factory.CreateLogger("Program");
 
             try
             {
