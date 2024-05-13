@@ -20,12 +20,12 @@ namespace Application.Models.Request
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         [Range(0, 9999.99, ErrorMessage = "O campo {0} deve ter o valor entre {1} e {2}.")]
         [Display(Name = "Preço")]
-        public decimal Preco { get; set; }
+        public required decimal Preco { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required bool Ativo { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public Categoria Categoria { get; set; }
+        public required Categoria Categoria { get; set; }
     }
 }

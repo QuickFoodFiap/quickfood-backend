@@ -7,6 +7,10 @@ namespace Application.DependencyInjection
     [ExcludeFromCodeCoverage]
     public static class ServiceCollectionExtensions
     {
-        public static void AddApplicationDependencyServices(this IServiceCollection services) => services.AddTransient<IProdutoUseCase, ProdutoUseCase>();
+        public static void AddApplicationDependencyServices(this IServiceCollection services)
+        {
+            services.AddTransient<IProdutoUseCase, ProdutoUseCase>();
+            services.AddTransient<IClienteUseCase, ClienteUseCase>();
+        }
     }
 }

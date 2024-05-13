@@ -5,16 +5,15 @@ using Domain.ValueObjects;
 
 namespace Application.UseCases
 {
-    public class ProdutoUseCase(IProdutoRepository usuarioRepository) : IProdutoUseCase
+    public class ProdutoUseCase(IProdutoRepository produtoRepository) : IProdutoUseCase
     {
-        private readonly IProdutoRepository _produtoRepository = usuarioRepository;
+        private readonly IProdutoRepository _produtoRepository = produtoRepository;
 
         public async Task<bool> CadastrarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
         {
             var produtos = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao);
 
             var produtoExistente = produtos.FirstOrDefault(g => g.Id == request.Id);
-
 
             if (produtoExistente == null)
             {
@@ -26,12 +25,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            if (!await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken))
-            {
-                return false;
-            }
-
-            return true;
+            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> AtualizarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
@@ -44,12 +38,7 @@ namespace Application.UseCases
                 await _produtoRepository.UpdateAsync(produto, cancellationToken);
             }
 
-            if (!await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken))
-            {
-                return false;
-            }
-
-            return true;
+            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> DeletarProdutoAsync(Guid id, CancellationToken cancellationToken)
@@ -65,12 +54,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            if (!await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken))
-            {
-                return false;
-            }
-
-            return true;
+            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Produto>> ObterTodosProdutosAsync(CancellationToken cancellationToken) =>
