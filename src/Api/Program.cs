@@ -6,15 +6,15 @@ namespace Api
     {
         public static void Main(string[] args)
         {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger logger = factory.CreateLogger("Program");
+            using var factory = LoggerFactory.Create(builder => builder.AddConsole());
+            var logger = factory.CreateLogger("Program");
 
             try
             {
                 logger.LogInformation("Starting application");
                 CreateWebHostBuilder(args).Build().Run();
             }
-            catch (Exception ex)
+            catch
             {
                 logger.LogInformation("Application stopped by exception");
                 throw;
