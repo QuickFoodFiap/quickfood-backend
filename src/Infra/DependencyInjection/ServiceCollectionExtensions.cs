@@ -19,6 +19,7 @@ namespace Infra.DependencyInjection
             });
 
             services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            services.AddScoped<IClienteRepository, ClienteRepository>();
         }
     }
 }

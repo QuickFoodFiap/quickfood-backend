@@ -4,6 +4,7 @@ using Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240513230150_Clientes-01")]
+    partial class Clientes01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,24 +47,6 @@ namespace Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cliente", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("efee2d79-ce89-479a-9667-04f57f9e2e5e"),
-                            Ativo = true,
-                            Cpf = "08062759016",
-                            Email = "joao@gmail.com",
-                            Nome = "João"
-                        },
-                        new
-                        {
-                            Id = new Guid("fdff63d2-127f-49c5-854a-e47cae8cedb9"),
-                            Ativo = true,
-                            Cpf = "05827307084",
-                            Email = "maria@gmail.com",
-                            Nome = "Maria"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Produto", b =>

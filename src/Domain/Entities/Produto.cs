@@ -1,9 +1,10 @@
-﻿using Core.Domain.Entities;
+﻿using Core.Domain.Abstractions;
+using Core.Domain.Entities;
 using Domain.ValueObjects;
 
 namespace Domain.Entities
 {
-    public class Produto : Entity
+    public class Produto : Entity, IAggregateRoot
     {
         public string Nome { get; private set; }
         public string Descricao { get; private set; }
