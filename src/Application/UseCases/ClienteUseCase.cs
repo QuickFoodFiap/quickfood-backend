@@ -36,6 +36,10 @@ namespace Application.UseCases
                 var cliente = new Cliente(request.Id, request.Nome, request.Email, request.Cpf, request.Ativo);
                 await _clienteRepository.UpdateAsync(cliente, cancellationToken);
             }
+            else
+            {
+                return false;
+            }
 
             return await _clienteRepository.UnitOfWork.CommitAsync(cancellationToken);
         }

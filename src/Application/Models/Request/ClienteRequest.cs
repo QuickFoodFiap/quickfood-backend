@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Core.Domain.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Models.Request
 {
     public record ClienteRequest
     {
-        [Key]
-        public Guid Id { get; set; }
+        [RequiredGuid(ErrorMessage = "O campo {0} é obrigatório.")]
+        public required Guid Id { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         [StringLength(50, ErrorMessage = "O campo {0} deve conter entre {2} e {1} caracteres.", MinimumLength = 2)]
         public required string Nome { get; set; }
 
-        [EmailAddress(ErrorMessage = "{0} em formato inválido.")]
+        [EmailAddress(ErrorMessage = "{0} está em um formato inválido.")]
         [StringLength(100, ErrorMessage = "O campo {0} deve conter entre {2} e {1} caracteres.", MinimumLength = 5)]
         [Display(Name = "E-mail")]
         public string? Email { get; set; }
@@ -20,6 +21,7 @@ namespace Application.Models.Request
         [Display(Name = "CPF")]
         public string? Cpf { get; set; }
 
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required bool Ativo { get; set; }
     }
 }

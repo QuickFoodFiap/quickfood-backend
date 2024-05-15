@@ -37,6 +37,10 @@ namespace Application.UseCases
                 var produto = new Produto(request.Id, request.Descricao, request.Nome, request.Preco, request.Categoria, request.Ativo);
                 await _produtoRepository.UpdateAsync(produto, cancellationToken);
             }
+            else
+            {
+                return false;
+            }
 
             return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }

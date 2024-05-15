@@ -16,7 +16,7 @@ namespace Api
             }
             catch
             {
-                logger.LogInformation("Application stopped by exception");
+                logger.LogCritical("Application stopped by exception");
                 throw;
             }
             finally
@@ -27,11 +27,6 @@ namespace Api
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.SetMinimumLevel(LogLevel.Information);
-            });
+            .UseStartup<Startup>();
     }
 }
