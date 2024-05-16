@@ -1,4 +1,5 @@
 ﻿using Core.Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace Domain.Entities
 {
@@ -9,6 +10,7 @@ namespace Domain.Entities
         public int Quantidade { get; private set; }
         public decimal ValorUnitario { get; private set; }
 
+        [JsonIgnore]
         public Pedido Pedido { get; set; }
 
         protected PedidoItem() { }
@@ -23,8 +25,15 @@ namespace Domain.Entities
         public void AssociarPedido(Guid pedidoId) =>
             PedidoId = pedidoId;
 
-        public void AdicionarUnidades(int unidades) =>
+        public void AdicionarUnidades(int unidades)
+        {
+            if (unidades <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(unidades), "O número de unidades a serem adicionadas deve ser maior que zero.");
+            }
+
             Quantidade += unidades;
+        }
 
         public decimal CalcularValor() =>
             Quantidade * ValorUnitario;

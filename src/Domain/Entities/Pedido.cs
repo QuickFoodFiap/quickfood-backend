@@ -8,8 +8,9 @@ namespace Domain.Entities
     {
         public int NumeroPedido { get; private set; }
         public Guid ClienteId { get; private set; }
-        public PedidoStatus PedidoStatus { get; private set; }
+        public PedidoStatus Status { get; private set; }
         public decimal ValorTotal { get; private set; }
+        public PagamentoStatus Pagamento { get; private set; }
 
         private readonly List<PedidoItem> _pedidoItems;
         public IReadOnlyCollection<PedidoItem> PedidoItems => _pedidoItems;
@@ -22,38 +23,81 @@ namespace Domain.Entities
             Id = id;
             ClienteId = clienteId;
             _pedidoItems = [];
+            Pagamento = PagamentoStatus.Pendente;
+            Status = PedidoStatus.Rascunho;
         }
-
-        public bool PedidoItemExistente(PedidoItem item) =>
-            _pedidoItems.Any(p => p.ProdutoId == item.ProdutoId);
 
         public void AdicionarItem(PedidoItem item)
         {
-            item.AssociarPedido(Id);
+            var itemExistente = _pedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
 
-            if (PedidoItemExistente(item))
+            if (itemExistente != null)
             {
-                var itemExistente = _pedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
-                if (itemExistente != null)
-                {
-                    itemExistente.AdicionarUnidades(item.Quantidade);
-                    item = itemExistente;
-
-                    _pedidoItems.Remove(itemExistente);
-                }
+                itemExistente.AdicionarUnidades(item.Quantidade);
+                item = itemExistente;
+            }
+            else
+            {
+                _pedidoItems.Add(item);
             }
 
             item.CalcularValor();
-            _pedidoItems.Add(item);
-
             CalcularValorPedido();
         }
 
-        public void CalcularValorPedido() =>
+        public void RemoverItem(PedidoItem item)
+        {
+            _pedidoItems.Remove(item);
+            CalcularValorPedido();
+        }
+        public void AlterarStatusPedidoRascunho() =>
+            Status = PedidoStatus.Rascunho;
+
+        private void CalcularValorPedido() =>
             ValorTotal = PedidoItems.Sum(p => p.CalcularValor());
 
-        public void AlterarStatusPedidoRascunho() =>
-            PedidoStatus = PedidoStatus.Rascunho;
+        public bool EfetuarCheckout()
+        {
+            if (Status == PedidoStatus.Rascunho)
+            {
+                Status = PedidoStatus.Recebido;
+                return true;
+            }
 
+            return false;
+        }
+
+        public bool AlterarStatus(PedidoStatus novoStatus)
+        {
+            switch (Status)
+            {
+                case PedidoStatus.Recebido:
+                    if (novoStatus == PedidoStatus.EmPreparacao)
+                    {
+                        Status = novoStatus;
+                        return true;
+                    }
+
+                    break;
+                case PedidoStatus.EmPreparacao:
+                    if (novoStatus == PedidoStatus.Pronto)
+                    {
+                        Status = novoStatus;
+                        return true;
+                    }
+
+                    break;
+                case PedidoStatus.Pronto:
+                    if (novoStatus == PedidoStatus.Finalizado)
+                    {
+                        Status = novoStatus;
+                        return true;
+                    }
+
+                    break;
+            }
+
+            return false;
+        }
     }
 }

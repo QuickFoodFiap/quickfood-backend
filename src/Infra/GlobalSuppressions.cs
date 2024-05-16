@@ -6,4 +6,3 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("CodeQuality", "IDE0079:Remover a supressão desnecessária", Justification = "<Pendente>", Scope = "namespace", Target = "~N:Infra.Migrations")]
-[assembly: SuppressMessage("Performance", "CA1861:Evite matrizes constantes como argumentos", Justification = "<Pendente>", Scope = "member", Target = "~M:Infra.Migrations.Cliente02.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)")]
