@@ -14,7 +14,15 @@ namespace Infra.Mappings
                    .HasColumnType("decimal(18,2)")
                    .HasPrecision(2);
 
-            builder.Property(c => c.NumeroPedido).UseIdentityColumn(100000, 1);
+            builder.Property(c => c.Status)
+                .HasColumnType("varchar(20)")
+                .HasConversion<string>();
+
+            builder.Property(c => c.Pagamento)
+                .HasColumnType("varchar(20)")
+                .HasConversion<string>();
+
+            builder.Property(c => c.NumeroPedido).UseIdentityColumn(10, 1).ValueGeneratedOnAddOrUpdate();
 
             // 1 : N => Pedido : PedidoItems
             builder.HasMany(c => c.PedidoItems)

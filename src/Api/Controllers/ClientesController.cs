@@ -49,7 +49,7 @@ namespace Api.Controllers
 
             var result = await _clienteUseCase.AtualizarClienteAsync(request, cancellationToken);
 
-            return result ? SuccessCreated($"clientes/{request.Id}", request) : ErrorBadRequest(result);
+            return result ? SuccessNoContent() : ErrorBadRequest(result);
         }
 
         [HttpDelete("{id:guid}")]

@@ -58,7 +58,7 @@ namespace Api.Controllers
 
             var result = await _produtoUseCase.AtualizarProdutoAsync(request, cancellationToken);
 
-            return result ? SuccessCreated($"produtos/{request.Id}", request) : ErrorBadRequest(result);
+            return result ? SuccessNoContent() : ErrorBadRequest(result);
         }
 
         [HttpDelete("{id:guid}")]

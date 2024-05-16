@@ -11,36 +11,38 @@ namespace Application.UseCases
 
         public async Task<bool> CadastrarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
             var produtos = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao);
 
             var produtoExistente = produtos.FirstOrDefault(g => g.Id == request.Id);
 
-            if (produtoExistente == null)
-            {
-                var produto = new Produto(request.Id, request.Descricao, request.Nome, request.Preco, request.Categoria, request.Ativo);
-                await _produtoRepository.InsertAsync(produto, cancellationToken);
-            }
-            else
+            if (produtoExistente != null)
             {
                 return false;
             }
+
+            var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
+
+            await _produtoRepository.InsertAsync(produto, cancellationToken);
 
             return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> AtualizarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
             var produtoExistente = await _produtoRepository.FindByIdAsync(request.Id, cancellationToken);
 
-            if (produtoExistente != null)
-            {
-                var produto = new Produto(request.Id, request.Descricao, request.Nome, request.Preco, request.Categoria, request.Ativo);
-                await _produtoRepository.UpdateAsync(produto, cancellationToken);
-            }
-            else
+            if (produtoExistente == null)
             {
                 return false;
             }
+
+            var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
+
+            await _produtoRepository.UpdateAsync(produto, cancellationToken);
 
             return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
@@ -49,14 +51,12 @@ namespace Application.UseCases
         {
             var produtoExistente = await _produtoRepository.FindByIdAsync(id, cancellationToken);
 
-            if (produtoExistente != null)
-            {
-                await _produtoRepository.DeleteAsync(id, cancellationToken);
-            }
-            else
+            if (produtoExistente == null)
             {
                 return false;
             }
+
+            await _produtoRepository.DeleteAsync(id, cancellationToken);
 
             return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
