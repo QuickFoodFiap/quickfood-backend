@@ -32,9 +32,11 @@ namespace Infra.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Cpf")
+                        .IsRequired()
                         .HasColumnType("varchar(11)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("Nome")
@@ -43,7 +45,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cliente", "dbo");
+                    b.ToTable("Clientes", "dbo");
 
                     b.HasData(
                         new
@@ -64,14 +66,41 @@ namespace Infra.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.Pagamento", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PedidoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TipoPagamento")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId")
+                        .IsUnique();
+
+                    b.ToTable("Pagamentos", "dbo");
+                });
+
             modelBuilder.Entity("Domain.Entities.Pedido", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClienteId")
+                    b.Property<Guid?>("ClienteId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("NumeroPedido")
                         .ValueGeneratedOnAddOrUpdate()
@@ -79,11 +108,11 @@ namespace Infra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NumeroPedido"), 10L);
 
-                    b.Property<string>("Pagamento")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("StatusPagamento")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
 
@@ -93,7 +122,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pedido", "dbo");
+                    b.ToTable("Pedidos", "dbo");
                 });
 
             modelBuilder.Entity("Domain.Entities.PedidoItem", b =>
@@ -119,7 +148,7 @@ namespace Infra.Migrations
 
                     b.HasIndex("PedidoId");
 
-                    b.ToTable("PedidoItem", "dbo");
+                    b.ToTable("PedidoItens", "dbo");
                 });
 
             modelBuilder.Entity("Domain.Entities.Produto", b =>
@@ -133,7 +162,7 @@ namespace Infra.Migrations
 
                     b.Property<string>("Categoria")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -149,7 +178,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Produto", "dbo");
+                    b.ToTable("Produtos", "dbo");
 
                     b.HasData(
                         new
@@ -271,6 +300,45 @@ namespace Infra.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.Transacao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataTransacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PagamentoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("QrCodePix")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PagamentoId");
+
+                    b.ToTable("Transacoes", "dbo");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Pagamento", b =>
+                {
+                    b.HasOne("Domain.Entities.Pedido", null)
+                        .WithOne("Pagamento")
+                        .HasForeignKey("Domain.Entities.Pagamento", "PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.PedidoItem", b =>
                 {
                     b.HasOne("Domain.Entities.Pedido", "Pedido")
@@ -282,8 +350,27 @@ namespace Infra.Migrations
                     b.Navigation("Pedido");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Transacao", b =>
+                {
+                    b.HasOne("Domain.Entities.Pagamento", "Pagamento")
+                        .WithMany("Transacoes")
+                        .HasForeignKey("PagamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pagamento");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Pagamento", b =>
+                {
+                    b.Navigation("Transacoes");
+                });
+
             modelBuilder.Entity("Domain.Entities.Pedido", b =>
                 {
+                    b.Navigation("Pagamento")
+                        .IsRequired();
+
                     b.Navigation("PedidoItems");
                 });
 #pragma warning restore 612, 618

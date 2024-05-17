@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.ValueObjects;
 using Infra.Mappings.SeedData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,6 +11,8 @@ namespace Infra.Mappings
     {
         public void Configure(EntityTypeBuilder<Produto> builder)
         {
+            builder.ToTable("Produtos", "dbo");
+
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Nome)
@@ -26,11 +27,9 @@ namespace Infra.Mappings
                    .HasColumnType("decimal(18,2)")
                    .HasPrecision(2);
 
-            builder.Property(u => u.Categoria)
-                   .IsRequired()
-                   .HasConversion(r => r.ToString(), v => (Categoria)Enum.Parse(typeof(Categoria), v));
-
-            builder.ToTable("Produto", "dbo");
+            builder.Property(c => c.Categoria)
+                .HasColumnType("varchar(20)")
+                .HasConversion<string>();
 
             // Data
             builder.HasData(ProdutoSeedData.GetSeedData());

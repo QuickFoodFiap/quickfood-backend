@@ -11,6 +11,8 @@ namespace Infra.Mappings
     {
         public void Configure(EntityTypeBuilder<Cliente> builder)
         {
+            builder.ToTable("Clientes", "dbo");
+
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Nome)
@@ -18,12 +20,12 @@ namespace Infra.Mappings
                    .HasColumnType("varchar(50)");
 
             builder.Property(c => c.Email)
+                   .IsRequired()
                    .HasColumnType("varchar(100)");
 
             builder.Property(c => c.Cpf)
+                   .IsRequired()
                    .HasColumnType("varchar(11)");
-
-            builder.ToTable("Cliente", "dbo");
 
             // Data
             builder.HasData(ClienteSeedData.GetSeedData());

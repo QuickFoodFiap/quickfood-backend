@@ -11,6 +11,11 @@ namespace Infra.Repositories
         private readonly DbSet<Pedido> _pedidos = context.Set<Pedido>();
 
         public async Task<IEnumerable<Pedido>> ObterTodosPedidosAsync() =>
-            await _pedidos.AsNoTracking().AsSplitQuery().Include(p => p.PedidoItems).OrderBy(p => p.NumeroPedido).ToListAsync();
+            await _pedidos.AsNoTracking().AsSplitQuery()
+            .Include(pa => pa.Pagamento)
+            .ThenInclude(ta => ta.Transacoes)
+            .Include(pi => pi.PedidoItems)
+            .OrderBy(p => p.NumeroPedido)
+            .ToListAsync();
     }
 }

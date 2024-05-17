@@ -21,6 +21,8 @@ namespace Core.WebApi.DependencyInjection
 
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
             });
 
             services.AddSwaggerConfig();

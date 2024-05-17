@@ -35,20 +35,20 @@ namespace Api.Controllers
         }
 
         [HttpPatch("checkout/{pedidoId:guid}")]
-        public async Task<IActionResult> Checkout([FromRoute] Guid pedidoId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Checkout([FromRoute] Guid pedidoId, [FromBody] CheckoutRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return ErrorBadRequestModelState(ModelState);
             }
 
-            var result = await _pedidoUseCase.EfetuarCheckoutAsync(pedidoId, cancellationToken);
+            var result = await _pedidoUseCase.EfetuarCheckoutAsync(pedidoId, request, cancellationToken);
 
             return result ? SuccessNoContent() : ErrorBadRequest(result);
         }
 
         [HttpPatch("status/{pedidoId:guid}")]
-        public async Task<IActionResult> Teste([FromRoute] Guid pedidoId, [FromBody] PedidoStatusRequest pedidoStatus, CancellationToken cancellationToken)
+        public async Task<IActionResult> AlterarStatusPedido([FromRoute] Guid pedidoId, [FromBody] PedidoStatusRequest pedidoStatus, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {

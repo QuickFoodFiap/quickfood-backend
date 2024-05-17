@@ -10,13 +10,18 @@ namespace Domain.Entities
         public int Quantidade { get; private set; }
         public decimal ValorUnitario { get; private set; }
 
-        [JsonIgnore]
-        public Pedido Pedido { get; set; }
+        public Pedido Pedido { get; private set; }
 
+        // Relation
         protected PedidoItem() { }
 
         public PedidoItem(Guid produtoId, int quantidade, decimal valorUnitario)
         {
+            if (quantidade <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(quantidade), "A quantidade deve ser maior que zero.");
+            }
+
             ProdutoId = produtoId;
             Quantidade = quantidade;
             ValorUnitario = valorUnitario;

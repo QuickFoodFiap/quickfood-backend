@@ -7,29 +7,32 @@ namespace Domain.Entities
     public class Pedido : Entity, IAggregateRoot
     {
         public int NumeroPedido { get; private set; }
-        public Guid ClienteId { get; private set; }
+        public Guid? ClienteId { get; private set; }
         public PedidoStatus Status { get; private set; }
         public decimal ValorTotal { get; private set; }
-        public PagamentoStatus Pagamento { get; private set; }
+        public StatusTransacao StatusPagamento { get; private set; }
+        public DateTime DataCriacao { get; private set; }
 
-        private readonly List<PedidoItem> _pedidoItems;
-        public IReadOnlyCollection<PedidoItem> PedidoItems => _pedidoItems;
+        private readonly Lazy<List<PedidoItem>> _pedidoItemsLazy = new(() => []);
+        public IReadOnlyCollection<PedidoItem> PedidoItems => _pedidoItemsLazy.Value;
 
-        protected Pedido() =>
-            _pedidoItems = [];
+        public Pagamento Pagamento { get; set; }
 
-        public Pedido(Guid id, Guid clienteId)
+        // Relation
+        protected Pedido() { }
+
+        public Pedido(Guid id, Guid? clienteId)
         {
             Id = id;
             ClienteId = clienteId;
-            _pedidoItems = [];
-            Pagamento = PagamentoStatus.Pendente;
+            StatusPagamento = StatusTransacao.Pendente;
             Status = PedidoStatus.Rascunho;
+            DataCriacao = DateTime.UtcNow;
         }
 
         public void AdicionarItem(PedidoItem item)
         {
-            var itemExistente = _pedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
+            var itemExistente = PedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
 
             if (itemExistente != null)
             {
@@ -38,7 +41,7 @@ namespace Domain.Entities
             }
             else
             {
-                _pedidoItems.Add(item);
+                _pedidoItemsLazy.Value.Add(item);
             }
 
             item.CalcularValor();
@@ -47,11 +50,9 @@ namespace Domain.Entities
 
         public void RemoverItem(PedidoItem item)
         {
-            _pedidoItems.Remove(item);
+            _pedidoItemsLazy.Value.Remove(item);
             CalcularValorPedido();
         }
-        public void AlterarStatusPedidoRascunho() =>
-            Status = PedidoStatus.Rascunho;
 
         private void CalcularValorPedido() =>
             ValorTotal = PedidoItems.Sum(p => p.CalcularValor());
@@ -66,6 +67,12 @@ namespace Domain.Entities
 
             return false;
         }
+
+        public void CancelarCheckout() =>
+            Status = PedidoStatus.Rascunho;
+
+        public void AlterarStatusPagamento(StatusTransacao statusPagamento) =>
+            StatusPagamento = statusPagamento;
 
         public bool AlterarStatus(PedidoStatus novoStatus)
         {

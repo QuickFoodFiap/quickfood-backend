@@ -8,8 +8,7 @@ namespace Application.Models.Request
         [RequiredGuid(ErrorMessage = "O campo {0} é obrigatório.")]
         public required Guid PedidoId { get; set; }
 
-        [RequiredGuid(ErrorMessage = "O campo {0} é obrigatório.")]
-        public required Guid ClienteId { get; set; }
+        public Guid? ClienteId { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required List<PedidoItemRequest> Items { get; set; } = [];

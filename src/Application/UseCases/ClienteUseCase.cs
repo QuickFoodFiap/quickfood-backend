@@ -19,7 +19,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            var cliente = new Cliente(request.Id, request.Nome, request.Email, request.Cpf, request.Ativo);
+            var cliente = ClienteFactory.Criar(request);
 
             await _clienteRepository.InsertAsync(cliente, cancellationToken);
 
@@ -37,7 +37,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            var cliente = new Cliente(request.Id, request.Nome, request.Email, request.Cpf, request.Ativo);
+            var cliente = ClienteFactory.Criar(request);
 
             await _clienteRepository.UpdateAsync(cliente, cancellationToken);
 
@@ -60,5 +60,11 @@ namespace Application.UseCases
 
         public async Task<IEnumerable<Cliente>> ObterTodosClientesAsync(CancellationToken cancellationToken) =>
             await _clienteRepository.ObterTodosClientesAsync();
+    }
+
+    public static class ClienteFactory
+    {
+        public static Cliente Criar(ClienteRequest request) =>
+            new(request.Id, request.Nome, request.Email, request.Cpf, request.Ativo);
     }
 }

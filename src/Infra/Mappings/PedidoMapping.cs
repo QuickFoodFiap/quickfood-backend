@@ -8,6 +8,8 @@ namespace Infra.Mappings
     {
         public void Configure(EntityTypeBuilder<Pedido> builder)
         {
+            builder.ToTable("Pedidos", "dbo");
+
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.ValorTotal)
@@ -18,7 +20,7 @@ namespace Infra.Mappings
                 .HasColumnType("varchar(20)")
                 .HasConversion<string>();
 
-            builder.Property(c => c.Pagamento)
+            builder.Property(c => c.StatusPagamento)
                 .HasColumnType("varchar(20)")
                 .HasConversion<string>();
 
@@ -29,7 +31,6 @@ namespace Infra.Mappings
                 .WithOne(c => c.Pedido)
                 .HasForeignKey(c => c.PedidoId);
 
-            builder.ToTable("Pedido", "dbo");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Application.UseCases
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var produtos = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao);
+            var produtos = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome);
 
             var produtoExistente = produtos.FirstOrDefault(g => g.Id == request.Id);
 
@@ -22,7 +22,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
+            var produto = ProdutoFactory.Criar(request);
 
             await _produtoRepository.InsertAsync(produto, cancellationToken);
 
@@ -40,7 +40,7 @@ namespace Application.UseCases
                 return false;
             }
 
-            var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
+            var produto = ProdutoFactory.Criar(request);
 
             await _produtoRepository.UpdateAsync(produto, cancellationToken);
 
@@ -66,5 +66,11 @@ namespace Application.UseCases
 
         public async Task<IEnumerable<Produto>> ObterProdutosCategoriaAsync(Categoria categoria, CancellationToken cancellationToken) =>
             await _produtoRepository.ObterProdutosCategoriaAsync(categoria);
+    }
+
+    public static class ProdutoFactory
+    {
+        public static Produto Criar(ProdutoRequest request) =>
+            new(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
     }
 }
