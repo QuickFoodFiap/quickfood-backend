@@ -12,7 +12,7 @@ namespace Application.UseCases
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var clienteExistente = await _clienteRepository.FindByIdAsync(request.Id, cancellationToken);
+            var clienteExistente = _clienteRepository.Find(e => e.Id == request.Id || e.Cpf == request.Cpf || e.Email == request.Email).FirstOrDefault(g => g.Id == request.Id);
 
             if (clienteExistente != null)
             {
@@ -60,5 +60,12 @@ namespace Application.UseCases
 
         public async Task<IEnumerable<Cliente>> ObterTodosClientesAsync(CancellationToken cancellationToken) =>
             await _clienteRepository.ObterTodosClientesAsync();
+
+        public async Task<Cliente> IdentificarClienteCpfAsync(IdentifiqueSeRequest request, CancellationToken cancellationToken)
+        {
+            var cliente = await _clienteRepository.IdentificarClienteCpfAsync(request.Cpf, cancellationToken);
+
+            return cliente ?? throw new InvalidOperationException($"Cliente {request.Cpf} não encontrado.");
+        }
     }
 }

@@ -8,17 +8,18 @@ namespace Infra.Mappings
     {
         public void Configure(EntityTypeBuilder<PedidoItem> builder)
         {
+            builder.ToTable("PedidosItens", "dbo");
+
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.ValorUnitario)
                    .HasColumnType("decimal(18,2)")
                    .HasPrecision(2);
 
-            // 1 : N => Pedido : Pagamento
+            // Relacionamentos
+
             builder.HasOne(c => c.Pedido)
                 .WithMany(c => c.PedidoItems);
-
-            builder.ToTable("PedidoItem", "dbo");
         }
     }
 }

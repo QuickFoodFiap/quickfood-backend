@@ -21,6 +21,14 @@ namespace Api.Controllers
             return result != null ? SuccessOk(result) : ErrorNotFound();
         }
 
+        [HttpGet("identifique-se")]
+        public async Task<IActionResult> IdentificarClienteCpf([FromQuery] IdentifiqueSeRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _clienteUseCase.IdentificarClienteCpfAsync(request, cancellationToken);
+
+            return result != null ? SuccessOk(result) : ErrorNotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> CadastrarCliente(ClienteRequest request, CancellationToken cancellationToken)
         {
