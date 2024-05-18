@@ -43,7 +43,15 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cliente", "dbo");
+                    b.HasIndex("Cpf")
+                        .IsUnique()
+                        .HasFilter("[Cpf] IS NOT NULL");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.ToTable("Clientes", "dbo");
 
                     b.HasData(
                         new
@@ -93,7 +101,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pedido", "dbo");
+                    b.ToTable("Pedidos", "dbo");
                 });
 
             modelBuilder.Entity("Domain.Entities.PedidoItem", b =>
@@ -119,7 +127,7 @@ namespace Infra.Migrations
 
                     b.HasIndex("PedidoId");
 
-                    b.ToTable("PedidoItem", "dbo");
+                    b.ToTable("PedidosItens", "dbo");
                 });
 
             modelBuilder.Entity("Domain.Entities.Produto", b =>
@@ -149,7 +157,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Produto", "dbo");
+                    b.ToTable("Produtos", "dbo");
 
                     b.HasData(
                         new

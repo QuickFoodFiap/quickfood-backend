@@ -12,6 +12,8 @@ namespace Infra.Mappings
     {
         public void Configure(EntityTypeBuilder<Produto> builder)
         {
+            builder.ToTable("Produtos", "dbo");
+
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Nome)
@@ -29,8 +31,6 @@ namespace Infra.Mappings
             builder.Property(u => u.Categoria)
                    .IsRequired()
                    .HasConversion(r => r.ToString(), v => (Categoria)Enum.Parse(typeof(Categoria), v));
-
-            builder.ToTable("Produto", "dbo");
 
             // Data
             builder.HasData(ProdutoSeedData.GetSeedData());

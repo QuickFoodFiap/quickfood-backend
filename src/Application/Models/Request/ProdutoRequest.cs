@@ -27,6 +27,7 @@ namespace Application.Models.Request
         public required bool Ativo { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        [EnumDataType(typeof(Categoria))]
         public required Categoria Categoria { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace Infra.Migrations
                 name: "dbo");
 
             migrationBuilder.CreateTable(
-                name: "Cliente",
+                name: "Clientes",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -28,11 +28,11 @@ namespace Infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cliente", x => x.Id);
+                    table.PrimaryKey("PK_Clientes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Pedido",
+                name: "Pedidos",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -46,11 +46,11 @@ namespace Infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pedido", x => x.Id);
+                    table.PrimaryKey("PK_Pedidos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Produto",
+                name: "Produtos",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -63,11 +63,11 @@ namespace Infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Produto", x => x.Id);
+                    table.PrimaryKey("PK_Produtos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PedidoItem",
+                name: "PedidosItens",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -79,19 +79,19 @@ namespace Infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PedidoItem", x => x.Id);
+                    table.PrimaryKey("PK_PedidosItens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PedidoItem_Pedido_PedidoId",
+                        name: "FK_PedidosItens_Pedidos_PedidoId",
                         column: x => x.PedidoId,
                         principalSchema: "dbo",
-                        principalTable: "Pedido",
+                        principalTable: "Pedidos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Cliente",
+                table: "Clientes",
                 columns: ["Id", "Ativo", "Cpf", "Email", "Nome"],
                 values: new object[,]
                 {
@@ -101,7 +101,7 @@ namespace Infra.Migrations
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Produto",
+                table: "Produtos",
                 columns: ["Id", "Ativo", "Categoria", "Descricao", "Nome", "Preco"],
                 values: new object[,]
                 {
@@ -121,9 +121,25 @@ namespace Infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PedidoItem_PedidoId",
+                name: "IX_Clientes_Cpf",
                 schema: "dbo",
-                table: "PedidoItem",
+                table: "Clientes",
+                column: "Cpf",
+                unique: true,
+                filter: "[Cpf] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clientes_Email",
+                schema: "dbo",
+                table: "Clientes",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PedidosItens_PedidoId",
+                schema: "dbo",
+                table: "PedidosItens",
                 column: "PedidoId");
         }
 
@@ -131,19 +147,19 @@ namespace Infra.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Cliente",
+                name: "Clientes",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "PedidoItem",
+                name: "PedidosItens",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Produto",
+                name: "Produtos",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Pedido",
+                name: "Pedidos",
                 schema: "dbo");
         }
     }

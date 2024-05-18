@@ -13,9 +13,7 @@ namespace Application.UseCases
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var produtos = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao);
-
-            var produtoExistente = produtos.FirstOrDefault(g => g.Id == request.Id);
+            var produtoExistente = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao).FirstOrDefault(g => g.Id == request.Id);
 
             if (produtoExistente != null)
             {
