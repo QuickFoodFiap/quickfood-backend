@@ -45,14 +45,6 @@ namespace Domain.Entities
             CalcularValorPedido();
         }
 
-        public void RemoverItem(PedidoItem item)
-        {
-            _pedidoItems.Remove(item);
-            CalcularValorPedido();
-        }
-        public void AlterarStatusPedidoRascunho() =>
-            Status = PedidoStatus.Rascunho;
-
         private void CalcularValorPedido() =>
             ValorTotal = PedidoItems.Sum(p => p.CalcularValor());
 
@@ -61,6 +53,7 @@ namespace Domain.Entities
             if (Status == PedidoStatus.Rascunho)
             {
                 Status = PedidoStatus.Recebido;
+                Pagamento = PagamentoStatus.Pago;
                 return true;
             }
 
