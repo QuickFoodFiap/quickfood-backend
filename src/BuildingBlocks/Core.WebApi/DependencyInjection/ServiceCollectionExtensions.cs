@@ -1,4 +1,5 @@
-﻿using Core.WebApi.Configurations;
+﻿using Core.Domain.Notificacoes;
+using Core.WebApi.Configurations;
 using Core.WebApi.GlobalErrorMiddleware;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +16,8 @@ namespace Core.WebApi.DependencyInjection
     {
         public static void AddApiDefautConfig(this IServiceCollection services)
         {
+            services.AddScoped<INotificador, Notificador>();
+
             services.AddControllers().AddJsonOptions(delegate (JsonOptions options)
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

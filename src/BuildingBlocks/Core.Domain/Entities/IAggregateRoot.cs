@@ -1,4 +1,4 @@
-﻿namespace Core.Domain.Abstractions
+﻿namespace Core.Domain.Entities
 {
     public interface IAggregateRoot
     {

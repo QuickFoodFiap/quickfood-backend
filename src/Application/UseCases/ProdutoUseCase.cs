@@ -1,68 +1,81 @@
 ﻿using Application.Models.Request;
+using Core.Domain.Base;
+using Core.Domain.Notificacoes;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.ValueObjects;
 
 namespace Application.UseCases
 {
-    public class ProdutoUseCase(IProdutoRepository produtoRepository) : IProdutoUseCase
+    public class ProdutoUseCase(IProdutoRepository produtoRepository, INotificador notificador) : BaseUseCase(notificador), IProdutoUseCase
     {
-        private readonly IProdutoRepository _produtoRepository = produtoRepository;
-
         public async Task<bool> CadastrarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var produtoExistente = _produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao).FirstOrDefault(g => g.Id == request.Id);
+            var produtoExistente = produtoRepository.Find(e => e.Id == request.Id || e.Nome == request.Nome || e.Descricao == request.Descricao).FirstOrDefault(g => g.Id == request.Id);
 
-            if (produtoExistente != null)
+            if (produtoExistente is not null)
             {
+                Notificar("Produto já existente");
                 return false;
             }
 
             var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
 
-            await _produtoRepository.InsertAsync(produto, cancellationToken);
+            if (!ExecutarValidacao(new ValidarProduto(), produto))
+            {
+                return false;
+            }
 
-            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
+            await produtoRepository.InsertAsync(produto, cancellationToken);
+
+            return await produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> AtualizarProdutoAsync(ProdutoRequest request, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var produtoExistente = await _produtoRepository.FindByIdAsync(request.Id, cancellationToken);
+            var produtoExistente = await produtoRepository.FindByIdAsync(request.Id, cancellationToken);
 
-            if (produtoExistente == null)
+            if (produtoExistente is null)
             {
+                Notificar("Produto inexistente");
                 return false;
             }
 
             var produto = new Produto(request.Id, request.Nome, request.Descricao, request.Preco, request.Categoria, request.Ativo);
 
-            await _produtoRepository.UpdateAsync(produto, cancellationToken);
-
-            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
-        }
-
-        public async Task<bool> DeletarProdutoAsync(Guid id, CancellationToken cancellationToken)
-        {
-            var produtoExistente = await _produtoRepository.FindByIdAsync(id, cancellationToken);
-
-            if (produtoExistente == null)
+            if (!ExecutarValidacao(new ValidarProduto(), produto))
             {
                 return false;
             }
 
-            await _produtoRepository.DeleteAsync(id, cancellationToken);
+            await produtoRepository.UpdateAsync(produto, cancellationToken);
 
-            return await _produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
+            return await produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
+        }
+
+        public async Task<bool> DeletarProdutoAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var produtoExistente = await produtoRepository.FindByIdAsync(id, cancellationToken);
+
+            if (produtoExistente is null)
+            {
+                Notificar("Produto inexistente");
+                return false;
+            }
+
+            await produtoRepository.DeleteAsync(id, cancellationToken);
+
+            return await produtoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Produto>> ObterTodosProdutosAsync(CancellationToken cancellationToken) =>
-            await _produtoRepository.ObterTodosProdutosAsync();
+            await produtoRepository.ObterTodosProdutosAsync();
 
         public async Task<IEnumerable<Produto>> ObterProdutosCategoriaAsync(Categoria categoria, CancellationToken cancellationToken) =>
-            await _produtoRepository.ObterProdutosCategoriaAsync(categoria);
+            await produtoRepository.ObterProdutosCategoriaAsync(categoria);
     }
 }

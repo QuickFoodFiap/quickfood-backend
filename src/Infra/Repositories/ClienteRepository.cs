@@ -10,7 +10,7 @@ namespace Infra.Repositories
     {
         private readonly DbSet<Cliente> _clientes = context.Set<Cliente>();
 
-        public async Task<Cliente> IdentificarClienteCpfAsync(string cpf, CancellationToken cancellationToken) =>
+        public async Task<Cliente?> IdentificarClienteCpfAsync(string cpf, CancellationToken cancellationToken) =>
             await _clientes.AsNoTracking().Where(p => p.Cpf == cpf).FirstOrDefaultAsync(cancellationToken);
 
         public async Task<IEnumerable<Cliente>> ObterTodosClientesAsync() =>

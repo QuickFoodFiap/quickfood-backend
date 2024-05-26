@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Domain.Notificacoes;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Diagnostics.CodeAnalysis;
@@ -18,16 +19,27 @@ namespace Core.WebApi.Controller
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Not Found", null)]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal Server Error", null)]
     [SwaggerResponse((int)HttpStatusCode.ServiceUnavailable, "Service Unavailable", null)]
-    public abstract class MainController : ControllerBase
+    public abstract class MainController(INotificador notificador) : ControllerBase
     {
-        protected IActionResult SuccessOk(object data) =>
-            Ok(new BaseApiResponse { Success = true, Data = data });
+        protected IActionResult CustomResponseGet(object? data) =>
+            data is not null
+                ? Ok(SuccessResponse(data))
+                : NotFound(NoSuccessResponse(data));
 
-        protected IActionResult SuccessCreated(string url, object data) =>
-            Created(url, new BaseApiResponse { Success = true, Data = data });
+        protected IActionResult CustomResponsePost(string url, object data, bool result) =>
+            OperacaoValida() || result
+                ? Created(url, SuccessResponse(data))
+                : BadRequest(NoSuccessResponse(data));
 
-        protected IActionResult SuccessNoContent() =>
-            NoContent();
+        protected IActionResult CustomResponsePutPatch(object data, bool result) =>
+            OperacaoValida() || result
+                ? Ok(SuccessResponse(data))
+                : BadRequest(NoSuccessResponse(data));
+
+        protected IActionResult CustomResponseDelete(Guid id, bool result) =>
+            result
+                ? Ok(SuccessResponse(id))
+                : BadRequest(NoSuccessResponse(id));
 
         protected IActionResult ErrorBadRequestPutId()
         {
@@ -48,28 +60,30 @@ namespace Core.WebApi.Controller
             });
         }
 
-        protected IActionResult ErrorUnauthorized(object data) =>
-            StatusCode((int)HttpStatusCode.Unauthorized, new BaseApiResponse { Success = false, Data = data });
+        private bool OperacaoValida() =>
+            !notificador.TemNotificacao();
 
-        protected IActionResult ErrorForbidden(object data) =>
-            StatusCode((int)HttpStatusCode.Forbidden, new BaseApiResponse { Success = false, Data = data });
+        private static BaseApiResponse SuccessResponse(object data) =>
+            new() { Success = true, Data = data };
 
-        protected IActionResult ErrorNotFound(string error)
-        {
-            var errors = new List<string> { error };
-            return NotFound(new BaseApiResponse { Success = false, Errors = errors });
-        }
+        private static BaseApiResponse SuccessResponse(Guid id) =>
+            new() { Success = true, Data = id };
 
-        protected IActionResult ErrorNotFound() =>
-            NotFound();
+        private BaseApiResponse NoSuccessResponse(Guid id) =>
+            new()
+            {
+                Success = false,
+                Data = id,
+                Errors = notificador.ObterNotificacoes().Select(n => n.Mensagem).ToList()
+            };
 
-        protected IActionResult ErrorBadRequest(object data) =>
-            StatusCode((int)HttpStatusCode.BadRequest, new BaseApiResponse { Success = false, Data = data });
+        private BaseApiResponse NoSuccessResponse(object? data) =>
+            new()
+            {
+                Success = false,
+                Data = data,
+                Errors = notificador.ObterNotificacoes().Select(n => n.Mensagem).ToList()
+            };
 
-        protected IActionResult ErrorInternalServerError(object data) =>
-            StatusCode((int)HttpStatusCode.InternalServerError, new BaseApiResponse { Success = false, Data = data });
-
-        protected IActionResult ErrorUnavailable(object data) =>
-            StatusCode((int)HttpStatusCode.ServiceUnavailable, new BaseApiResponse { Success = false, Data = data });
     }
 }

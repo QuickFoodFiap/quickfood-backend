@@ -7,6 +7,6 @@ namespace Domain.Repositories
     {
         Task<IEnumerable<Cliente>> ObterTodosClientesAsync();
 
-        Task<Cliente> IdentificarClienteCpfAsync(string cpf, CancellationToken cancellationToken);
+        Task<Cliente?> IdentificarClienteCpfAsync(string cpf, CancellationToken cancellationToken);
     }
 }

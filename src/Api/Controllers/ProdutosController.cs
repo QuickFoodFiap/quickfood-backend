@@ -1,5 +1,6 @@
 using Application.Models.Request;
 using Application.UseCases;
+using Core.Domain.Notificacoes;
 using Core.WebApi.Controller;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -7,27 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [Route("produtos")]
-    public class ProdutosController : MainController
+    public class ProdutosController(IProdutoUseCase produtoUseCase, INotificador notificador) : MainController(notificador)
     {
-        private readonly IProdutoUseCase _produtoUseCase;
-
-        public ProdutosController(IProdutoUseCase produtoUseCase) =>
-            _produtoUseCase = produtoUseCase;
-
         [HttpGet]
         public async Task<IActionResult> ObterTodosProdutos(CancellationToken cancellationToken)
         {
-            var result = await _produtoUseCase.ObterTodosProdutosAsync(cancellationToken);
+            var result = await produtoUseCase.ObterTodosProdutosAsync(cancellationToken);
 
-            return result != null ? SuccessOk(result) : ErrorNotFound();
+            return CustomResponseGet(result);
         }
 
         [HttpGet("categoria")]
         public async Task<IActionResult> ObterProdutosCategoria(Categoria categoria, CancellationToken cancellationToken)
         {
-            var result = await _produtoUseCase.ObterProdutosCategoriaAsync(categoria, cancellationToken);
+            var result = await produtoUseCase.ObterProdutosCategoriaAsync(categoria, cancellationToken);
 
-            return result != null ? SuccessOk(result) : ErrorNotFound();
+            return CustomResponseGet(result);
         }
 
         [HttpPost]
@@ -38,9 +34,9 @@ namespace Api.Controllers
                 return ErrorBadRequestModelState(ModelState);
             }
 
-            var result = await _produtoUseCase.CadastrarProdutoAsync(request, cancellationToken);
+            var result = await produtoUseCase.CadastrarProdutoAsync(request, cancellationToken);
 
-            return result ? SuccessCreated($"produtos/{request.Id}", request) : ErrorBadRequest(result);
+            return CustomResponsePost($"produtos/{request.Id}", request, result);
         }
 
         [HttpPut("{id:guid}")]
@@ -56,17 +52,17 @@ namespace Api.Controllers
                 return ErrorBadRequestPutId();
             }
 
-            var result = await _produtoUseCase.AtualizarProdutoAsync(request, cancellationToken);
+            var result = await produtoUseCase.AtualizarProdutoAsync(request, cancellationToken);
 
-            return result ? SuccessNoContent() : ErrorBadRequest(result);
+            return CustomResponsePutPatch(request, result);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeletarProduto([FromRoute] Guid id, CancellationToken cancellationToken)
         {
-            var result = await _produtoUseCase.DeletarProdutoAsync(id, cancellationToken);
+            var result = await produtoUseCase.DeletarProdutoAsync(id, cancellationToken);
 
-            return result ? SuccessNoContent() : ErrorNotFound();
+            return CustomResponseDelete(id, result);
         }
     }
 }

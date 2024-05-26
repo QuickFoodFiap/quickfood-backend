@@ -1,24 +1,20 @@
 using Application.Models.Request;
 using Application.UseCases;
+using Core.Domain.Notificacoes;
 using Core.WebApi.Controller;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [Route("pedidos")]
-    public class PedidosController : MainController
+    public class PedidosController(IPedidoUseCase pedidoUseCase, INotificador notificador) : MainController(notificador)
     {
-        private readonly IPedidoUseCase _pedidoUseCase;
-
-        public PedidosController(IPedidoUseCase pedidoUseCase) =>
-            _pedidoUseCase = pedidoUseCase;
-
         [HttpGet]
         public async Task<IActionResult> ObterTodosPedidos(CancellationToken cancellationToken)
         {
-            var result = await _pedidoUseCase.ObterTodosPedidosAsync(cancellationToken);
+            var result = await pedidoUseCase.ObterTodosPedidosAsync(cancellationToken);
 
-            return result != null ? SuccessOk(result) : NotFound();
+            return CustomResponseGet(result);
         }
 
         [HttpPost]
@@ -29,9 +25,9 @@ namespace Api.Controllers
                 return ErrorBadRequestModelState(ModelState);
             }
 
-            var result = await _pedidoUseCase.CadastrarPedidoAsync(request, cancellationToken);
+            var result = await pedidoUseCase.CadastrarPedidoAsync(request, cancellationToken);
 
-            return result ? SuccessCreated($"pedidos/{request.PedidoId}", request) : ErrorBadRequest(result);
+            return CustomResponsePost($"pedidos/{request.PedidoId}", request, result);
         }
 
         [HttpPatch("checkout/{pedidoId:guid}")]
@@ -42,22 +38,22 @@ namespace Api.Controllers
                 return ErrorBadRequestModelState(ModelState);
             }
 
-            var result = await _pedidoUseCase.EfetuarCheckoutAsync(pedidoId, cancellationToken);
+            var result = await pedidoUseCase.EfetuarCheckoutAsync(pedidoId, cancellationToken);
 
-            return result ? SuccessNoContent() : ErrorBadRequest(result);
+            return CustomResponsePutPatch(pedidoId, result);
         }
 
         [HttpPatch("status/{pedidoId:guid}")]
-        public async Task<IActionResult> Teste([FromRoute] Guid pedidoId, [FromBody] PedidoStatusRequest pedidoStatus, CancellationToken cancellationToken)
+        public async Task<IActionResult> AlterarStatus([FromRoute] Guid pedidoId, [FromBody] PedidoStatusRequest pedidoStatus, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return ErrorBadRequestModelState(ModelState);
             }
 
-            var result = await _pedidoUseCase.AlterarStatusAsync(pedidoId, pedidoStatus.Status, cancellationToken);
+            var result = await pedidoUseCase.AlterarStatusAsync(pedidoId, pedidoStatus.Status, cancellationToken);
 
-            return result ? SuccessNoContent() : ErrorBadRequest(result);
+            return CustomResponsePutPatch(pedidoStatus, result);
         }
     }
 }

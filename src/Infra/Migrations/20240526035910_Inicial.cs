@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -23,7 +24,7 @@ namespace Infra.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "varchar(50)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", nullable: true),
-                    Cpf = table.Column<string>(type: "varchar(11)", nullable: true),
+                    Cpf = table.Column<string>(type: "varchar(11)", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -125,8 +126,7 @@ namespace Infra.Migrations
                 schema: "dbo",
                 table: "Clientes",
                 column: "Cpf",
-                unique: true,
-                filter: "[Cpf] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clientes_Email",

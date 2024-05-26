@@ -19,7 +19,7 @@ namespace Application.Models.Request
         public required string Descricao { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        [Range(0.1, 9999.99, ErrorMessage = "O campo {0} deve ter o valor entre {1} e {2}.")]
+        [Range(1, 9999, ErrorMessage = "O campo {0} deve ter o valor entre {1} e {2}.")]
         [Display(Name = "Preço")]
         public required decimal Preco { get; set; }
 
