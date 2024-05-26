@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using FluentValidation.Results;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Domain.Entities
 {
@@ -6,5 +7,16 @@ namespace Core.Domain.Entities
     public abstract class Entity
     {
         public Guid Id { get; protected set; }
+
+        protected static void Validar(ValidationResult results)
+        {
+            if (!results.IsValid)
+            {
+                foreach (var failure in results.Errors)
+                {
+                    throw new DomainException(failure.ErrorMessage);
+                }
+            }
+        }
     }
 }

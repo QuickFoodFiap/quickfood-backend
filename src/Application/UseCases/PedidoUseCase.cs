@@ -1,82 +1,104 @@
 ﻿using Application.Models.Request;
+using Core.Domain.Base;
+using Core.Domain.Notificacoes;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.ValueObjects;
 
 namespace Application.UseCases
 {
-    public class PedidoUseCase : IPedidoUseCase
+    public class PedidoUseCase(IPedidoRepository pedidoRepository, IProdutoRepository produtoRepository, INotificador notificador) : BaseUseCase(notificador), IPedidoUseCase
     {
-        private readonly IPedidoRepository _pedidoRepository;
-        private readonly IProdutoRepository _produtoRepository;
-
-        public PedidoUseCase(IPedidoRepository pedidoRepository, IProdutoRepository produtoRepository)
-        {
-            _pedidoRepository = pedidoRepository;
-            _produtoRepository = produtoRepository;
-        }
-
         public async Task<bool> CadastrarPedidoAsync(PedidoRequest request, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var pedidoExistente = await _pedidoRepository.FindByIdAsync(request.PedidoId, cancellationToken);
+            var pedidoExistente = await pedidoRepository.FindByIdAsync(request.PedidoId, cancellationToken);
 
-            if (pedidoExistente != null)
+            if (pedidoExistente is not null)
             {
-                throw new InvalidOperationException("Pedido já existe.");
+                Notificar("Pedido já existente");
+                return false;
             }
 
             var pedido = new Pedido(request.PedidoId, request.ClienteId);
 
-            foreach (var item in request.Items)
+            if (!ExecutarValidacao(new ValidarPedido(), pedido))
             {
-                var produto = await _produtoRepository.FindByIdAsync(item.ProdutoId, cancellationToken) ?? throw new InvalidOperationException($"Produto {item.ProdutoId} não encontrado.");
-
-                pedido.AdicionarItem(new PedidoItem(item.ProdutoId, item.Quantidade, produto.Preco));
+                return false;
             }
 
-            await _pedidoRepository.InsertAsync(pedido, cancellationToken);
+            foreach (var item in request.Items)
+            {
+                var produto = await produtoRepository.FindByIdAsync(item.ProdutoId, cancellationToken);
 
-            return await _pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
+                if (produto is null)
+                {
+                    Notificar($"Produto {item.ProdutoId} não encontrado.");
+                }
+                else
+                {
+                    pedido.AdicionarItem(new PedidoItem(item.ProdutoId, item.Quantidade, produto.Preco));
+                }
+            }
+
+            await pedidoRepository.InsertAsync(pedido, cancellationToken);
+
+            return await pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> EfetuarCheckoutAsync(Guid pedidoId, CancellationToken cancellationToken)
         {
-            var pedido = await GetPedidoOrThrowAsync(pedidoId, cancellationToken);
+            var pedido = await ObterPedidoAsync(pedidoId, cancellationToken);
+
+            if (pedido is null)
+            {
+                return false;
+            }
 
             if (!pedido.EfetuarCheckout())
             {
-                throw new InvalidOperationException("Não foi possível realizar o checkout do pedido.");
+                Notificar("Não foi possível realizar o checkout do pedido.");
             }
 
-            await _pedidoRepository.UpdateAsync(pedido, cancellationToken);
+            await pedidoRepository.UpdateAsync(pedido, cancellationToken);
 
-            return await _pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
+            return await pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public async Task<bool> AlterarStatusAsync(Guid pedidoId, PedidoStatus pedidoStatus, CancellationToken cancellationToken)
         {
-            var pedido = await GetPedidoOrThrowAsync(pedidoId, cancellationToken);
+            var pedido = await ObterPedidoAsync(pedidoId, cancellationToken);
+
+            if (pedido is null)
+            {
+                return false;
+            }
 
             if (!pedido.AlterarStatus(pedidoStatus))
             {
-                throw new InvalidOperationException("Não foi possível alterar o status do pedido.");
+                Notificar("Não foi possível alterar o status do pedido.");
+                return false;
             }
 
-            await _pedidoRepository.UpdateAsync(pedido, cancellationToken);
+            await pedidoRepository.UpdateAsync(pedido, cancellationToken);
 
-            return await _pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
+            return await pedidoRepository.UnitOfWork.CommitAsync(cancellationToken);
         }
 
         public Task<IEnumerable<Pedido>> ObterTodosPedidosAsync(CancellationToken cancellationToken) =>
-            _pedidoRepository.ObterTodosPedidosAsync();
+            pedidoRepository.ObterTodosPedidosAsync();
 
-        private async Task<Pedido> GetPedidoOrThrowAsync(Guid pedidoId, CancellationToken cancellationToken)
+        private async Task<Pedido?> ObterPedidoAsync(Guid pedidoId, CancellationToken cancellationToken)
         {
-            var pedido = await _pedidoRepository.FindByIdAsync(pedidoId, cancellationToken);
+            var pedido = await pedidoRepository.FindByIdAsync(pedidoId, cancellationToken);
 
-            return pedido ?? throw new InvalidOperationException($"Pedido {pedidoId} não encontrado.");
+            if (pedido is null)
+            {
+                Notificar($"Pedido {pedidoId} não encontrado.");
+            }
+
+            return pedido;
         }
     }
 }

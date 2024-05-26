@@ -17,9 +17,10 @@ namespace Application.Models.Request
         [Display(Name = "E-mail")]
         public string? Email { get; set; }
 
-        [StringLength(11, ErrorMessage = "O campo {0} deve conter {1} caracteres.")]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        [StringLength(11, ErrorMessage = "O campo {0} deve conter {1} caracteres.", MinimumLength = 11)]
         [Display(Name = "CPF")]
-        public string? Cpf { get; set; }
+        public required string Cpf { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required bool Ativo { get; set; }

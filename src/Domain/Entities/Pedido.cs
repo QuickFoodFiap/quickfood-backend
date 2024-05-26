@@ -1,6 +1,6 @@
-﻿using Core.Domain.Abstractions;
-using Core.Domain.Entities;
+﻿using Core.Domain.Entities;
 using Domain.ValueObjects;
+using FluentValidation;
 
 namespace Domain.Entities
 {
@@ -98,6 +98,20 @@ namespace Domain.Entities
             }
 
             return false;
+        }
+    }
+
+    public class ValidarPedido : AbstractValidator<Pedido>
+    {
+        public ValidarPedido()
+        {
+            RuleFor(c => c.Id)
+                .NotNull().WithMessage("O {PropertyName} não pode ser nulo.")
+                .NotEmpty().WithMessage("O {PropertyName} deve ser válido.");
+
+            RuleFor(c => c.ClienteId)
+                .NotNull().WithMessage("O {PropertyName} não pode ser nulo.")
+                .NotEmpty().WithMessage("O {PropertyName} deve ser válido.");
         }
     }
 }

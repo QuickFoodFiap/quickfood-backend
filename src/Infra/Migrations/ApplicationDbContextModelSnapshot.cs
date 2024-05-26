@@ -32,6 +32,7 @@ namespace Infra.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Cpf")
+                        .IsRequired()
                         .HasColumnType("varchar(11)");
 
                     b.Property<string>("Email")
@@ -44,8 +45,7 @@ namespace Infra.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Cpf")
-                        .IsUnique()
-                        .HasFilter("[Cpf] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("Email")
                         .IsUnique()
