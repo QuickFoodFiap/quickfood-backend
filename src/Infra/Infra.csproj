@@ -13,7 +13,7 @@
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Cora.Infra\Cora.Infra.csproj" />
