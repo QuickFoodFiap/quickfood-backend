@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240526035910_Inicial")]
+    [Migration("20240528011408_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -81,7 +81,7 @@ namespace Infra.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClienteId")
+                    b.Property<Guid?>("ClienteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("NumeroPedido")

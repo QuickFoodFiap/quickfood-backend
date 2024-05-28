@@ -7,7 +7,7 @@ namespace Domain.Entities
     public class Pedido : Entity, IAggregateRoot
     {
         public int NumeroPedido { get; private set; }
-        public Guid ClienteId { get; private set; }
+        public Guid? ClienteId { get; private set; }
         public PedidoStatus Status { get; private set; }
         public decimal ValorTotal { get; private set; }
         public PagamentoStatus Pagamento { get; private set; }
@@ -18,7 +18,7 @@ namespace Domain.Entities
         protected Pedido() =>
             _pedidoItems = [];
 
-        public Pedido(Guid id, Guid clienteId)
+        public Pedido(Guid id, Guid? clienteId)
         {
             Id = id;
             ClienteId = clienteId;
@@ -96,15 +96,8 @@ namespace Domain.Entities
 
     public class ValidarPedido : AbstractValidator<Pedido>
     {
-        public ValidarPedido()
-        {
-            RuleFor(c => c.Id)
+        public ValidarPedido() => RuleFor(c => c.Id)
                 .NotNull().WithMessage("O {PropertyName} não pode ser nulo.")
                 .NotEmpty().WithMessage("O {PropertyName} deve ser válido.");
-
-            RuleFor(c => c.ClienteId)
-                .NotNull().WithMessage("O {PropertyName} não pode ser nulo.")
-                .NotEmpty().WithMessage("O {PropertyName} deve ser válido.");
-        }
     }
 }

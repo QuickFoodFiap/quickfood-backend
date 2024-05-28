@@ -4,7 +4,6 @@ using Core.WebApi.GlobalErrorMiddleware;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
@@ -38,14 +37,14 @@ namespace Core.WebApi.DependencyInjection
             }).AddInMemoryStorage();
         }
 
-        public static void UseApiDefautConfig(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static void UseApiDefautConfig(this IApplicationBuilder app)
         {
             app.UseApplicationErrorMiddleware();
 
-            app.UseSwaggerConfig(env);
+            app.UseSwaggerConfig();
 
-            app.UseHsts();
-            app.UseHttpsRedirection();
+            //app.UseHsts();
+            //app.UseHttpsRedirection();
 
             app.UseHealthChecks("/health", new HealthCheckOptions
             {
@@ -53,7 +52,6 @@ namespace Core.WebApi.DependencyInjection
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             })
                 .UseHealthChecksUI(options => { options.UIPath = "/health-ui"; });
-            ;
 
             app.UseRouting();
 

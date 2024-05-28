@@ -10,12 +10,9 @@ namespace Api
     {
         public IConfiguration _configuration;
 
-        private readonly IWebHostEnvironment _environment;
-
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
-            _environment = environment;
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
@@ -44,7 +41,7 @@ namespace Api
         {
             DatabaseMigratorBase.MigrateDatabase(context);
 
-            app.UseApiDefautConfig(_environment);
+            app.UseApiDefautConfig();
         }
     }
 }

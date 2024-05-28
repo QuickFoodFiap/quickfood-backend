@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,13 +13,10 @@ namespace Core.WebApi.Configurations
                                                                                               c.SwaggerDoc("v1", new OpenApiInfo { Title = "API QuickFood", Version = "v1" });
                                                                                           });
 
-        public static void UseSwaggerConfig(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static void UseSwaggerConfig(this IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -40,7 +39,7 @@ namespace Infra.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NumeroPedido = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "10, 1"),
-                    ClienteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClienteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Status = table.Column<string>(type: "varchar(20)", nullable: false),
                     ValorTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 2, nullable: false),
                     Pagamento = table.Column<string>(type: "varchar(20)", nullable: false)

@@ -78,7 +78,7 @@ namespace Infra.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClienteId")
+                    b.Property<Guid?>("ClienteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("NumeroPedido")
