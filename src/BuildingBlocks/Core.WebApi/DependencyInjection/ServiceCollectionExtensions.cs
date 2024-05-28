@@ -1,9 +1,7 @@
 ﻿using Core.Domain.Notificacoes;
 using Core.WebApi.Configurations;
 using Core.WebApi.GlobalErrorMiddleware;
-using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
@@ -27,14 +25,6 @@ namespace Core.WebApi.DependencyInjection
 
             services.AddSwaggerConfig();
 
-            services.AddHealthChecksUI(opt =>
-            {
-                opt.SetEvaluationTimeInSeconds(15);
-                opt.MaximumHistoryEntriesPerEndpoint(60);
-                opt.SetApiMaxActiveRequests(1);
-
-                opt.AddHealthCheckEndpoint("API QuickFood", "/health");
-            }).AddInMemoryStorage();
         }
 
         public static void UseApiDefautConfig(this IApplicationBuilder app)
@@ -43,21 +33,18 @@ namespace Core.WebApi.DependencyInjection
 
             app.UseSwaggerConfig();
 
-            //app.UseHsts();
-            //app.UseHttpsRedirection();
-
-            app.UseHealthChecks("/health", new HealthCheckOptions
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            })
-                .UseHealthChecksUI(options => { options.UIPath = "/health-ui"; });
+            app.UseHsts();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
+            });
         }
     }
 }
