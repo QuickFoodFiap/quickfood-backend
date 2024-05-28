@@ -25,7 +25,7 @@ namespace Infra.Context
             {
                 var config = new ConfigurationBuilder()
                                     .SetBasePath(Directory.GetCurrentDirectory())
-                                    .AddJsonFile("appsettings.json")
+                                    .AddJsonFile("appsettings_migration.json")
                                     .Build();
 
                 var connectionString = config.GetConnectionString("DefaultConnection");
