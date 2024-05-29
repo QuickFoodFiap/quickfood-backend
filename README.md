@@ -45,14 +45,23 @@ A arquitetura hexagonal será utilizada para garantir que a aplicação seja mod
    cd docker
    docker-compose up --build
 
-4. A aplicação estará disponível em http://localhost:5000 ou https://localhost:5001.
+4. A aplicação estará disponível em http://localhost:5000 ou https://localhost:5001
 
 5. URL do Swagger: http://localhost:5000/swagger ou https://localhost:5001/swagger
 
 6. URL do Healthcheck da API: http://localhost:5000/health ou https://localhost:5001/health
+
+7. Caso deseje testar via postman com dados fake importe o arquivo API QuickFood.postman_collection.json do diretorio "postman" na aplicação postman local.
 
 ## Autores
 
 - **Anderson Lopez de Andrade RM: 350452** <br>
 - **Augusto Rocha Carneiro Napoleão RM: 352125** <br>
 - **Henrique Alonso Vicente RM: 354583**<br>
+
+## Documentação Adicional
+
+- **Miro - Domain Storytelling, Context Map, Linguagem Ubíqua e Event Storming**: [Link para o Event Storming](https://miro.com/app/board/uXjVKST91sw=/)
+- **Github - Domain Storytelling**: [Link para o Domain Storytelling](https://github.com/QuickFoodFiap/quickfood-domain-story-telling)
+- **Github - Context Map**: [Link para o Domain Storytelling](https://github.com/QuickFoodFiap/quickfood-context-map)
+- **Github - Linguagem Ubíqua**: [Link para o Domain Storytelling](https://github.com/QuickFoodFiap/quickfood-ubiquitous-language)
