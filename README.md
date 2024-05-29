@@ -51,6 +51,8 @@ A arquitetura hexagonal será utilizada para garantir que a aplicação seja mod
 
 6. URL do Healthcheck da API: http://localhost:5000/health ou https://localhost:5001/health
 
+7. Caso deseje testar via postman com dados fake importe o arquivo API QuickFood.postman_collection.json do diretorio "postman" na aplicação postman local.
+
 ## Autores
 
 - **Anderson Lopez de Andrade RM: 350452** <br>
