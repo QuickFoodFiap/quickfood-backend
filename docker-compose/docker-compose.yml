@@ -34,7 +34,7 @@ services:
       context: ../src
       dockerfile: ./Api/Dockerfile
     restart: always
-    image: api
+    image: quickfood-backend
     container_name: quickfood-backend
     depends_on:
       quickfood-sqlserver:
