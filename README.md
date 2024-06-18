@@ -42,7 +42,7 @@ A arquitetura hexagonal será utilizada para garantir que a aplicação seja mod
 
 3. Configure o ambiente Docker:
    ```bash
-   cd docker
+   cd docker-compose
    docker-compose up --build
 
 4. A aplicação estará disponível em http://localhost:5000 ou https://localhost:5001
